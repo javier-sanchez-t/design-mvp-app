@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RestApiService } from '../services/RestApiService';
 import { NgxFileDropEntry, FileSystemFileEntry } from 'ngx-file-drop';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-new-project-c',
@@ -9,7 +10,9 @@ import { NgxFileDropEntry, FileSystemFileEntry } from 'ngx-file-drop';
 })
 export class NewProjectCComponent implements OnInit {
 
-  constructor(private api: RestApiService) { }
+  constructor(
+    private api: RestApiService,
+    private router: Router) { }
 
   ngOnInit() {
   }
@@ -23,6 +26,7 @@ export class NewProjectCComponent implements OnInit {
     this.api.createProject(this.project).subscribe(
       success => {
         console.log("success", success);
+        this.router.navigate([this.project.projectName]);
       },
       error => {
         console.log("error", error);

@@ -1,0 +1,15 @@
+.fullWidth{
+    width: 100%;
+}
+
+.spaceDown{
+    margin-bottom: 10px;
+}
+
+.spaceRight{
+    margin-right: 2px;
+}
+
+.center{
+    text-align: center;
+}

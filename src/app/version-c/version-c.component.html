@@ -1,3 +1,90 @@
-<p>
-  version-c works!
-</p>
+<!--div *ngIf="version!=null">
+  <p>
+    {{version.lastVersion.project.name}}
+  </p>
+
+
+  <button (click)="addRect()">Add comment</button>
+  <div id="container2">
+    <div *ngFor="let c of comments;" [ngStyle]="{'background-color':commentSelected === c.id ? 'yellow' : '' }">
+      Comment: {{c.id+1}}<input type="text">
+    </div>
+  </div>
+</div-->
+
+
+
+<!--div id="container">
+  <img style="width: 100%;" [src]="version==null ? '' : 'data:image/png;base64,'+version.lastVersion.design" alt="Design" />
+</div-->
+
+
+
+
+<div class="container">
+  <div class="row">
+    <div class="col-sm-8">
+
+      <h1 *ngIf="version!=null">{{version.lastVersion.project.name}}</h1>
+
+      <div *ngIf="version!=null" class="spaceDown">
+        <button type="button" class="btn btn-primary spaceRight" *ngFor="let v of version.versions;">
+          {{v.version}}
+        </button>
+        <button type="button" class="btn btn-success">Upload new version</button>
+      </div>
+
+      <button type="button" class="btn btn-success"
+        (click)="addComment(0, 0, 50, 50, 'new', this.version.lastVersion.comments.length, true, 'orange')">Add
+        comment</button>
+      <div id="container" [ngStyle]="{
+        'background-image': version==null ? 'url()' : 'url(data:image/png;base64,'+version.lastVersion.design+')',
+        'background-repeat':'no-repeat',
+        'background-size': 'contain',
+        'width':'100%'
+      }">
+      </div>
+    </div>
+    <div class="col-sm-4">
+
+      <div *ngIf="version!=null">
+        <div class="card" *ngFor="let c of version.lastVersion.comments;">
+          <div class="card-header" *ngIf="c.idComment==undefined"
+            [ngStyle]="{'background-color':commentSelected == c.id ? '#ffc107' : '' }">Leave a comment
+          </div>
+          <div class="card-body">
+            <div class="form-group row">
+              <label for="nameComment" class="col-sm-3 col-form-label">Name:</label>
+              <div class="col-sm-8">
+                <input [(ngModel)]="c.name" type="text" class="form-control form-control-sm" id="nameComment">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="comment" class="col-sm-12 col-form-label">Comment:</label>
+              <textarea [(ngModel)]="c.comment" class="form-control" id="commet" rows="1"></textarea>
+            </div>
+            <button *ngIf="c.idComment==undefined" (click)="saveComment(c)" type="button"
+              class="btn btn-primary">Save</button>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="version!=null">
+        <div class="">
+          <div *ngIf="version.lastVersion.approved" class="alert alert-success center spaceDown" role="alert">
+            This design is now approved!
+          </div>
+          <button (click)="approveVersion()" *ngIf="!version.lastVersion.approved" type="button"
+            class="btn btn-success fullWidth spaceDown">Approve</button>
+
+          <button (click)="undoApprovalVersion()" *ngIf="version.lastVersion.approved" type="button"
+            class="btn btn-warning fullWidth spaceDown">Undo approval</button>
+        </div>
+        <div>
+          <button type="button" class="btn btn-success fullWidth">Upload new version</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
