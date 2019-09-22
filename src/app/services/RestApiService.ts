@@ -15,8 +15,8 @@ export class RestApiService {
         return this.http.post<any>(URL, project);
     }
 
-    getVersionByProjectName(projectName: string): Observable<any> {
-        let URL: string = this.config.API_SERVER + this.config.VERSION_ENDPOINT + "/" + projectName;
+    getVersionByProjectName(projectName: string, versionName: string): Observable<any> {
+        let URL: string = this.config.API_SERVER + this.config.VERSION_ENDPOINT + "/" + projectName + "?version=" + versionName;
         return this.http.get(URL);
     }
 
@@ -25,8 +25,23 @@ export class RestApiService {
         return this.http.post<any>(URL, comment);
     }
 
+    saveReplyComment(replyComment: any): Observable<any> {
+        let URL: string = this.config.API_SERVER + this.config.COMMENT_ENDPOINT + "/reply";
+        return this.http.post<any>(URL, replyComment);
+    }
+
     approveVersion(idVersion: any, status: boolean): Observable<any> {
         let URL: string = this.config.API_SERVER + this.config.VERSION_ENDPOINT + "/approve/" + idVersion + "/" + status;
+        return this.http.put<any>(URL, null);
+    }
+
+    saveNewVersion(newVersion: any): Observable<any> {
+        let URL: string = this.config.API_SERVER + this.config.VERSION_ENDPOINT;
+        return this.http.post<any>(URL, newVersion);
+    }
+
+    resolveComment(idComment: any): Observable<any> {
+        let URL: string = this.config.API_SERVER + this.config.COMMENT_ENDPOINT + "/resolve/" + idComment;
         return this.http.put<any>(URL, null);
     }
 

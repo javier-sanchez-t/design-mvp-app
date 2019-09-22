@@ -5,7 +5,8 @@ import { VersionCComponent } from './version-c/version-c.component';
 
 const routes: Routes = [
   { path: '', component: NewProjectCComponent },
-  { path: ':projectName', component: VersionCComponent }
+  { path: ':projectName', component: VersionCComponent },
+  { path: ':projectName/:versionName', component: VersionCComponent }
 ];
 
 @NgModule({

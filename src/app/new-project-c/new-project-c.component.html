@@ -1,4 +1,4 @@
-<div class="center">
+<!--div class="center">
     <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)">
         <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
             Drag your file here (.jpg, png, gif)
@@ -22,4 +22,84 @@
 </div>
 
 <input type="text" required [(ngModel)]="project.projectName" />
-<button (click)="createProject()">Upload new design</button>
+<button (click)="createProject()">Upload new design</button-->
+
+
+
+<div class="main">
+    <div class="container">
+        <div class="row justify-content-center">
+
+            <div class="col-9">
+                <div class="col-4 align-self-center" style="visibility: hidden">
+                    <h1>f</h1>
+                </div>
+                <div class="col-4 align-self-center" style="visibility: hidden">
+                    <h1>f</h1>
+                </div>
+                <div class="col-4 align-self-center" style="visibility: hidden">
+                    <h1>f</h1>
+                </div>
+                <div class="card">
+                    <div class="col-4 align-self-center" style="margin-top: 20px;">
+                        <h1>New Project</h1>
+                    </div>
+                    <div class="card-body">
+                        <form>
+                            <div class="form-group">
+                                <div class="col align-self-center">
+                                    <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)">
+                                        <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
+                                            Drag your file here (.jpg, png, gif) &nbsp; &nbsp; &nbsp;
+                                            <button type="button" (click)="openFileSelector()"
+                                                class="btn btn-success">Browse file</button>
+                                        </ng-template>
+                                    </ngx-file-drop>
+                                    <div class="col-12">
+                                        <div class="upload-table">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>File name:</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="upload-name-style">
+                                                    <tr *ngFor="let item of files; let i=index">
+                                                        <td><strong>{{ item.relativePath }}</strong></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div *ngIf="error!=null" class="alert alert-danger" role="alert">
+            {{error.error.error}}
+        </div>
+    </div>
+    <div class="row justify-content-center">
+        <div>
+            <input type="text" required [(ngModel)]="project.projectName" placeholder="Name your project" />
+            <button (click)="createProject()" class="btn btn-primary">Upload new design</button>
+        </div>
+    </div>
+    <div class="col-4 align-self-center" style="visibility: hidden">
+        <h1>f</h1>
+    </div>
+    <div class="col-4 align-self-center" style="visibility: hidden">
+        <h1>f</h1>
+    </div>
+    <div class="col-4 align-self-center" style="visibility: hidden">
+        <h1>f</h1>
+    </div>
+
+</div>

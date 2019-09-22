@@ -9,12 +9,14 @@ import { Router } from '@angular/router';
   styleUrls: ['./new-project-c.component.css']
 })
 export class NewProjectCComponent implements OnInit {
+  error = null;
 
   constructor(
     private api: RestApiService,
     private router: Router) { }
 
   ngOnInit() {
+
   }
 
   project: any = {
@@ -30,6 +32,7 @@ export class NewProjectCComponent implements OnInit {
       },
       error => {
         console.log("error", error);
+        this.error = error;
       }
     );
   }

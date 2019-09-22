@@ -1,0 +1,13 @@
+/*@import url('https://fonts.googleapis.com/css?family=Numans');*/
+
+.main {
+    background-image:url('http://freevectors.com/wp-content/uploads/2016/01/Vintage-Design-Pattern-Background.jpg'); 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    height: 100%;
+  }
+
+
+  

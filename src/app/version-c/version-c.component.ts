@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RestApiService } from '../services/RestApiService';
 import * as Konva from '../../assets/js/konva.js';
+import { NgxFileDropEntry, FileSystemFileEntry } from 'ngx-file-drop';
 
 @Component({
   selector: 'app-version-c',
@@ -10,6 +11,7 @@ import * as Konva from '../../assets/js/konva.js';
 })
 export class VersionCComponent implements OnInit {
   protected projectName: string;
+  protected versionName: string;
   version: any = null;
   stage = null;
   layer = null;
@@ -17,18 +19,27 @@ export class VersionCComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private api: RestApiService
+    private api: RestApiService,
+    private router: Router
   ) { }
 
 
   ngOnInit() {
     this.route.params.subscribe(params => {
       this.projectName = params.projectName;
+      this.versionName = params.versionName == undefined ? "" : params.versionName;
+      this.initComponent(this.projectName, this.versionName);
     });
 
-    this.api.getVersionByProjectName(this.projectName).subscribe(
+  }
+
+  initComponent(projectName: string, versionName: string) {
+    console.log("Init component");
+
+    this.api.getVersionByProjectName(projectName, versionName).subscribe(
       success => {
-        console.log("Success: ", success);
+        console.log("VERSION: ", success);
+
         this.version = success;
         this.initDesign();
       },
@@ -90,6 +101,8 @@ export class VersionCComponent implements OnInit {
   clickRectComment(numComment) {
     this.stage.on('click tap', (e) => {
       this.commentSelected = numComment;
+      console.log("commented: ", this.commentSelected);
+      
       // if click on empty area - remove all transformers
       if (e.target === this.stage) {
         this.stage.find('Transformer').destroy();
@@ -111,6 +124,9 @@ export class VersionCComponent implements OnInit {
 
 
   saveComment(comment: any) {
+    let scaleX = this.layer.children[comment.id].attrs.scaleX == undefined ? 1 : this.layer.children[comment.id].attrs.scaleX;
+    let scaleY = this.layer.children[comment.id].attrs.scaleY == undefined ? 1 : this.layer.children[comment.id].attrs.scaleY;
+
     let newComment = {
       "name": comment.name,
       "comment": comment.comment,
@@ -123,8 +139,8 @@ export class VersionCComponent implements OnInit {
       "commentBean": null,
       "x": this.layer.children[comment.id].attrs.x,
       "y": this.layer.children[comment.id].attrs.y,
-      "width": this.layer.children[comment.id].attrs.width * this.layer.children[comment.id].attrs.scaleX,
-      "height": this.layer.children[comment.id].attrs.height * this.layer.children[comment.id].attrs.scaleY,
+      "width": this.layer.children[comment.id].attrs.width * scaleX,
+      "height": this.layer.children[comment.id].attrs.height * scaleY,
       "draggable": false,
       "stroke": "orange"
     }
@@ -141,29 +157,108 @@ export class VersionCComponent implements OnInit {
   }
 
 
-  approveVersion(){
-    this.api.approveVersion(this.version.lastVersion.idVersion, true).subscribe(
-      success=>{
-        console.log("SUCCESS: ", success);
-        this.version.lastVersion.approved = true;
-      }, 
-      error=>{
+  saveReplyComment(idComment: any, replyComment: any, parentComment: any) {
+    let newComment = {
+      "comment": replyComment,
+      "commentBean": {
+        "idComment": idComment
+      }
+    }
+
+    this.api.saveReplyComment(newComment).subscribe(
+      success => {
+        console.log("EXITO: ", success);
+        if (parentComment.replyComments == null) {
+          parentComment.replyComments = [];
+        }
+        parentComment.replyComments.push(newComment);
+        parentComment.replyComment="";
+      },
+      error => {
+        console.log("ERROR: ", error);
+      }
+    );
+
+  }
+
+
+  approveVersion(status: boolean) {
+    this.api.approveVersion(this.version.lastVersion.idVersion, status).subscribe(
+      success => {
+        this.version.lastVersion.approved = status;
+      },
+      error => {
         console.log("ERROR: ", error);
       }
     );
   }
 
-
-  undoApprovalVersion(){
-    this.api.approveVersion(this.version.lastVersion.idVersion, false).subscribe(
+  //RESOLVE COMMENT
+  resolveComment(comment:any){
+    this.api.resolveComment(comment.idComment).subscribe(
       success=>{
-        console.log("SUCCESS: ", success);
-        this.version.lastVersion.approved = false;
-      }, 
+        console.log("RESOLVE: ", success);
+        comment.solved = success;
+      },
       error=>{
-        console.log("ERROR: ", error);
+        console.log("RESOLVE: ", error);
+        
       }
     );
+  }
+
+
+  //NEW VERSION
+  files: NgxFileDropEntry[] = [];
+  newVersion = {
+    approved: false,
+    design: null,
+    project: null
+  }
+
+  dropped(files: NgxFileDropEntry[]) {
+    this.files = files;
+    for (const droppedFile of files) {
+
+      // Is it a file?
+      if (droppedFile.fileEntry.isFile) {
+        const fileEntry = droppedFile.fileEntry as FileSystemFileEntry;
+        fileEntry.file((file: File) => {
+
+          // Here you can access the real file
+          console.log(droppedFile.relativePath, file);
+          var myReader: FileReader = new FileReader();
+          myReader.onloadend = (e) => {
+            //this.project.initialdesign = myReader.result;
+            var imageB64 = myReader.result + "";
+            var breakIndex = imageB64.indexOf(",");
+            imageB64 = imageB64.substr(breakIndex + 1, imageB64.length);
+            this.newVersion.design = imageB64;
+            console.log("result", this.newVersion.design);
+          }
+          myReader.readAsDataURL(file);
+        });
+      }
+    }
+  }
+
+  uploadNewVersion() {
+    this.newVersion.project = this.version.lastVersion.project;
+    console.log("new version: ", this.newVersion);
+    this.api.saveNewVersion(this.newVersion).subscribe(
+      success => {
+        console.log("Success: ", success);
+        this.initComponent(this.version.lastVersion.project.name, "");
+        this.files = [];
+      },
+      error => {
+        console.log("error: ", error);
+      }
+    );
+  }
+
+  goToVersion(version: any) {
+    this.initComponent(this.version.lastVersion.project.name, version.version);
   }
 
 }
